@@ -45,6 +45,8 @@ provider:
           Resource: "*"
 
 
+
+
 functions:
 
   Auth:
@@ -82,7 +84,9 @@ functions:
             summary: Create a new todo
             description: Create a new todo
             requestModels:
-              'application/json': CreateTodoRequest              
+              'application/json': CreateTodoRequest        
+            schema:
+              application/json: ${file(models/create-todo-request.json)}         
     iamRoleStatements:
       - Effect: Allow
         Action:
@@ -105,6 +109,8 @@ functions:
             description: Update a todo item
             requestModels:
               'application/json': UpdateTodoRequest
+            schema:
+              application/json: ${file(models/update-todo-request.json)}   
     iamRoleStatements:
       - Effect: Allow
         Action:
