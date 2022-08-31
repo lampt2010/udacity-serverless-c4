@@ -30,6 +30,27 @@ export class TodoAccess {
     return items as TodoItem[]
   }
 
+  async getByName(userId: string, name :string): Promise<TodoItem[]> {
+    const result = await this.docClient.query({
+      TableName: this.todoTable,
+      KeyConditionExpression: 'userId = :userId',
+      ExpressionAttributeValues: {
+          ':userId': userId,
+          ':name': name,
+        },
+    }).promise()
+
+    const items = result.Items
+    return items as TodoItem[]
+  }
+
+
+
+
+
+
+
+
   async createTodoItem(todoItem: TodoItem): Promise<TodoItem> {
     await this.docClient.put({
       TableName: this.todoTable,
