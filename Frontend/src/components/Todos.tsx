@@ -38,11 +38,11 @@ export class Todos extends React.PureComponent<TodosProps, TodosState> {
 
   handleNameChange = async (event: React.ChangeEvent<HTMLInputElement>) => {
     console.log(event.target.value)
-    const todos = await getTodos(this.props.auth.getIdToken(), event.target.value)
-      this.setState({
-        todos,
-        loadingTodos: false
-      })
+    // const todos = await getTodos(this.props.auth.getIdToken(), event.target.value)
+    //   this.setState({
+    //     todos,
+    //     loadingTodos: false
+    //   })
     this.setState({ newTodoName: event.target.value })
   }
 
@@ -60,9 +60,9 @@ export class Todos extends React.PureComponent<TodosProps, TodosState> {
         name: this.state.newTodoName,
         dueDate
       })
-
+      debugger
       this.setState({
-        todos: [...this.state.todos, newTodo],
+        todos: [...this.state.todos, newTodo.data.item],
         newTodoName: ''
       })
 

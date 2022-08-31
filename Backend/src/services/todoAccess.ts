@@ -11,13 +11,13 @@ export class TodoAccess {
 
   constructor(
     private readonly docClient: DocumentClient = new XAWS.DynamoDB.DocumentClient(),
-    private readonly s3 = new AWS.S3({ signatureVersion: 'v4' }),
+    private readonly s3 = new XAWS.S3({ signatureVersion: 'v4' }),
     private readonly todoTable = process.env.TODOS_TABLE,
     private readonly bucketName = process.env.IMAGES_S3_BUCKET,
   ) {
   }
 
-  async getAllTodos(userId: string,name: string): Promise<TodoItem[]> {
+  async getAllTodos(userId: string, name: string): Promise<TodoItem[]> {
     const result = await this.docClient.query({
       TableName: this.todoTable,
       KeyConditionExpression: 'userId = :userId',
@@ -35,7 +35,7 @@ export class TodoAccess {
     return items as TodoItem[]
   }
 
-  async getByName(userId: string,name: string): Promise<TodoItem[]> {
+  async getByName(userId: string, name: string): Promise<TodoItem[]> {
     const result = await this.docClient.query({
       TableName: this.todoTable,
       KeyConditionExpression: 'userId = :userId',

@@ -16,8 +16,9 @@ export const handler: APIGatewayProxyHandler = async (event: APIGatewayProxyEven
   //handler check name unique 
 
   const item_check = await getByName(userId, requestBody.name)
+  console.log(`----------item check ---------- ${item_check}`)
   logger.info(`handler value item check get bu name api create todo ${item_check}`)
-  if (item_check) {
+  if (item_check.length>0) {
     return {
       statusCode: 400,
       headers: {
