@@ -36,9 +36,17 @@ export class Todos extends React.PureComponent<TodosProps, TodosState> {
     loadingTodos: true
   }
 
-  handleNameChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+  handleNameChange = async (event: React.ChangeEvent<HTMLInputElement>) => {
+    console.log(event.target.value)
+    const todos = await getTodos(this.props.auth.getIdToken(), event.target.value)
+      this.setState({
+        todos,
+        loadingTodos: false
+      })
     this.setState({ newTodoName: event.target.value })
   }
+
+
 
   onEditButtonClick = (todoId: string) => {
     this.props.history.push(`/todos/${todoId}/edit`)
@@ -46,18 +54,23 @@ export class Todos extends React.PureComponent<TodosProps, TodosState> {
 
   onTodoCreate = async (event: React.ChangeEvent<HTMLButtonElement>) => {
     try {
+
       const dueDate = this.calculateDueDate()
       const newTodo = await createTodo(this.props.auth.getIdToken(), {
         name: this.state.newTodoName,
         dueDate
       })
+
       this.setState({
         todos: [...this.state.todos, newTodo],
         newTodoName: ''
       })
-    } catch {
-      alert('Todo creation failed')
+
+
+    } catch (err: any) {
+      alert(err.message)
     }
+
   }
 
   onTodoDelete = async (todoId: string) => {
@@ -91,7 +104,7 @@ export class Todos extends React.PureComponent<TodosProps, TodosState> {
 
   async componentDidMount() {
     try {
-      const todos = await getTodos(this.props.auth.getIdToken())
+      const todos = await getTodos(this.props.auth.getIdToken(), '')
       this.setState({
         todos,
         loadingTodos: false
@@ -129,6 +142,8 @@ export class Todos extends React.PureComponent<TodosProps, TodosState> {
             actionPosition="left"
             placeholder="To change the world..."
             onChange={this.handleNameChange}
+
+            ref="SearchInput"
           />
         </Grid.Column>
         <Grid.Column width={16}>

@@ -1,4 +1,4 @@
-import * as AWS  from 'aws-sdk'
+import * as AWS from 'aws-sdk'
 import { DocumentClient } from 'aws-sdk/clients/dynamodb'
 
 import { TodoItem } from '../models/TodoItem'
@@ -14,21 +14,47 @@ export class TodoAccess {
     private readonly s3 = new AWS.S3({ signatureVersion: 'v4' }),
     private readonly todoTable = process.env.TODOS_TABLE,
     private readonly bucketName = process.env.IMAGES_S3_BUCKET,
-    ) {
+  ) {
   }
 
-  async getAllTodos(userId: string): Promise<TodoItem[]> {
+  async getAllTodos(userId: string,name: string): Promise<TodoItem[]> {
     const result = await this.docClient.query({
       TableName: this.todoTable,
       KeyConditionExpression: 'userId = :userId',
+      FilterExpression: 'contains(#name, :name)',
       ExpressionAttributeValues: {
-          ':userId': userId
-        },
+        ':userId': userId,
+        ":name": name,
+      },
+      ExpressionAttributeNames: {
+        "#name": "name",
+      },
     }).promise()
 
     const items = result.Items
     return items as TodoItem[]
   }
+
+  async getByName(userId: string,name: string): Promise<TodoItem[]> {
+    const result = await this.docClient.query({
+      TableName: this.todoTable,
+      KeyConditionExpression: 'userId = :userId',
+      FilterExpression: 'contains(#name, :name)',
+      ExpressionAttributeNames: {
+        "#name": "name",
+      },
+      ExpressionAttributeValues: {
+        ":name": name,
+        ':userId': userId,
+      }
+    }).promise()
+
+    const items = result.Items
+    return items as TodoItem[]
+  }
+
+
+
 
   async createTodoItem(todoItem: TodoItem): Promise<TodoItem> {
     await this.docClient.put({
@@ -57,8 +83,8 @@ export class TodoAccess {
         "todoId": todoId
       },
       UpdateExpression: "set attachmentUrl=:attachmentUrl",
-      ExpressionAttributeValues:{
-          ":attachmentUrl": `https://${this.bucketName}.s3.amazonaws.com/${todoId}`
+      ExpressionAttributeValues: {
+        ":attachmentUrl": `https://${this.bucketName}.s3.amazonaws.com/${todoId}`
       }
     }).promise()
   }
@@ -71,10 +97,10 @@ export class TodoAccess {
         "todoId": todoId
       },
       UpdateExpression: "set #name=:name, dueDate=:dueDate, done=:done",
-      ExpressionAttributeValues:{
-          ":name": updateTodoRequest.name,
-          ":dueDate": updateTodoRequest.dueDate,
-          ":done": updateTodoRequest.done
+      ExpressionAttributeValues: {
+        ":name": updateTodoRequest.name,
+        ":dueDate": updateTodoRequest.dueDate,
+        ":done": updateTodoRequest.done
       },
       ExpressionAttributeNames: {
         "#name": "name"

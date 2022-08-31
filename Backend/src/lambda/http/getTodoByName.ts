@@ -1,17 +1,16 @@
 import 'source-map-support/register'
 
 import { APIGatewayProxyEvent, APIGatewayProxyResult, APIGatewayProxyHandler } from 'aws-lambda'
-import { getAllTodos } from '../../services/todos'
+import { getByName } from '../../services/todos'
+import { CreateTodoRequest } from 'src/requests/CreateTodoRequest'
 import { getUserId } from '../utils'
-
 
 export const handler: APIGatewayProxyHandler = async (event: APIGatewayProxyEvent): Promise<APIGatewayProxyResult> => {
   console.log('Processing event: ', event)
 
   const userId = getUserId(event)
-  const name: any = event.queryStringParameters['name']
-  console.log(`-----------name querystring------------ ${name}`)
-  const items = await getAllTodos(userId,name)
+  const requestBody: CreateTodoRequest = JSON.parse(event.body)
+  const items = await getByName(userId,requestBody.name)
   items.forEach(item => delete item['userId'])
 
   return {

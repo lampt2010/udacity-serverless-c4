@@ -7,10 +7,18 @@ import { UpdateTodoRequest } from '../requests/UpdateTodoRequest'
 
 const todoAccess = new TodoAccess()
 
-export async function getAllTodos(userId: string): Promise<TodoItem[]> {
+export async function getAllTodos(userId: string,name :string): Promise<TodoItem[]> {
 
-  return await todoAccess.getAllTodos(userId)
+  return await todoAccess.getAllTodos(userId,name)
 }
+
+
+export async function getByName(userId: string,name: string): Promise<TodoItem[]> {
+
+  return await todoAccess.getByName(userId,name)
+}
+
+
 
 export async function createTodoItem(
   createGroupRequest: CreateTodoRequest,
